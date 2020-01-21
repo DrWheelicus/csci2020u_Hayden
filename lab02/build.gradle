@@ -1,5 +1,15 @@
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
+apply plugin: 'application'
+
+ext {
+   javaMainClass1 = 'csci2020u.lab02.CSVDemo'
+   javaMainClass2 = 'csci2020u.lab02.SimpleTest'
+}
+ 
+application {
+    mainClassName = javaMainClass2
+}
 
 // In this section you declare where to find the dependencies of your project
 repositories {
