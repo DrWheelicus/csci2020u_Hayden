@@ -10,13 +10,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-ext {
-   javaMainClass = 'csci2020u.lab03.CSVDemo'
-}
- 
-application {
-    mainClassName = javaMainClass
-}
+mainClassName = 'csci2020u.lab03.CSVDemo'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
