@@ -90,9 +90,9 @@ public class lab05 extends Application {
 
         addButton.setOnAction(e -> {
             if ((addSID.getText().length() == 9 && addSID.getText().charAt(0) == '1')
-                    && (Float.parseFloat(addAssignments.getText()) > 0 && Float.parseFloat(addAssignments.getText()) < 100)
-                    && (Float.parseFloat(addMidterm.getText()) > 0 && Float.parseFloat(addMidterm.getText()) < 100)
-                    && (Float.parseFloat(addExam.getText()) > 0 && Float.parseFloat(addExam.getText()) < 100)) {
+                    && (Float.parseFloat(addAssignments.getText()) >= 0 && Float.parseFloat(addAssignments.getText()) <= 100)
+                    && (Float.parseFloat(addMidterm.getText()) >= 0 && Float.parseFloat(addMidterm.getText()) <= 100)
+                    && (Float.parseFloat(addExam.getText()) >= 0 && Float.parseFloat(addExam.getText()) <= 100)) {
                 studentRecords.add(new StudentRecord(addSID.getText(),
                         addAssignments.getText(),
                         addMidterm.getText(),
