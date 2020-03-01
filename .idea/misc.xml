@@ -3,5 +3,9 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>
+<<<<<<< HEAD
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" project-jdk-name="12" project-jdk-type="JavaSDK" />
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="13" project-jdk-type="JavaSDK" />
+>>>>>>> fe05d7df142ca0864d1a9a74222bb0dc0ab129c0
 </project>
