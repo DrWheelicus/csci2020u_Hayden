@@ -1,187 +1,116 @@
-import java.io.File;
-
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-
 import java.io.FileReader;
-
-import java.util.HashMap;
-
-import java.util.Map;
-
-import java.util.Scanner;
+import java.io.IOException;
 
 import javafx.application.Application;
-
-import static javafx.application.Application.launch;
-
 import javafx.collections.FXCollections;
-
 import javafx.collections.ObservableList;
-
-import javafx.geometry.Side;
-
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
-
+import javafx.scene.chart.XYChart;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 
+public class PieChartDisplay extends Application{
+    int radius = 200;
+    int legendBox = 15;
+    public void start (Stage stage)  {
+        final Canvas pieChart = new Canvas(1000,1000);
+        GraphicsContext gc1 = pieChart.getGraphicsContext2D();
+        String[] warningTypeString = {"FLASH FLOOD", "SEVERE THUNDERSTORM", "SPECIAL MARINE", "TORNADO"};
+        int[] warningType = new int[4];
+        Color[] pieColours = {Color.AQUA, Color.GOLD, Color.DARKORANGE,Color.DARKSALMON};
 
-public class PieChartDisplay extends Application {
+        fillArray(warningTypeString,warningType);
+
+        double total = createTotal(warningType);
+        double startAngle = 0;
+        double endAngle;
+        for(int i=0;i<warningType.length;i++) {
+            endAngle = (warningType[i]/total)*360;
+            gc1.setFill(pieColours[i]);
+            gc1.fillArc(200,40,radius,radius,startAngle,endAngle,ArcType.ROUND);
+            startAngle+=(warningType[i]/total)*360;
+        }
+
+        for(int j=0;j<pieColours.length;j++) {
+            gc1.setFill(pieColours[j]);
+            gc1.fillRect(30, (25*j)+100, legendBox*2, legendBox);
+            gc1.setFill(Color.BLACK);
+            gc1.fillText(warningTypeString[j],30+(legendBox*2) , (25*j)+(100+legendBox));
+        }
 
 
 
-    //map to store each item and its count
+        HBox hBox = new HBox();
+        hBox.getChildren().add(pieChart);
+        stage.setTitle("Lab 07");
+        Scene scene = new Scene(hBox, 420, 250);
+        stage.setScene(scene);
+        stage.show();
 
 
+    }
 
-    private Map<String, Integer> map;
+    public static void main(String[] args){
+        launch(args);
+    }
 
-
-
-    //method to read the file and fill the map
-
-    //make sure you have the file in the root directory of your project
-
-
-
-    private void loadData(String filename) {
-
+    public static void fillArray(String[] warningTypeString, int[] warningType) {
+        String csvFile = "weatherwarnings-2015.csv";
+        String line = "";
+        String[] words=null;
         try {
-
-            //opening file
-
-            Scanner scanner = new Scanner(new FileReader(new File(filename)));
-
-            //looping through each line
-
-            while (scanner.hasNext()) {
-
-                //getting line, splitting line with comma
-
-                String line = scanner.nextLine();
-
-                String columns[] = line.split(",");
-
-                //making sure the resultant array has atleast 6 length
-
-                if (columns.length >= 6) {
-
-                    //getting 6th column (index 5)
-
-                    String field = columns[5].trim();
-
-                    //checking if map contains the field
-
-                    if (map.containsKey(field)) {
-
-                        //getting current count
-
-                        int count = map.get(field);
-
-                        //adding one to count
-
-                        count += 1;
-
-                        //replacing old entry
-
-                        map.put(field, count);
-
-                    } else {
-
-                        //adding as new value with count 1
-
-                        map.put(field, 1);
+            BufferedReader r = new BufferedReader(new FileReader(csvFile));
+            while((line = r.readLine()) != null) {
+                words=line.split(",");
+                for(String word:words) {
+                    if(word.equals(warningTypeString[0])) {
+                        warningType[0]++;
+                    }
+                    else if(word.equals(warningTypeString[1])) {
+                        warningType[1]++;
+                    }
+                    else if(word.equals(warningTypeString[2])) {
+                        warningType[2]++;
+                    }
+                    else if(word.equals(warningTypeString[3])) {
+                        warningType[3]++;
+                    }
+                    else {
 
                     }
-
                 }
 
             }
-
-        } catch (FileNotFoundException ex) {
-
-            System.out.println(ex);
-
         }
-
-
-
-    }
-
-
-
-    //method to create an ObservableList of Pie chart data from the map to fill
-
-    //the pie chart
-
-    ObservableList<PieChart.Data> createChartData() {
-
-        ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
-
-        //using each key-value pair, creating a PieChart data and adding to data list
-
-        for (String key : map.keySet()) {
-
-            data.add(new PieChart.Data(key, map.get(key)));
-
+        catch(FileNotFoundException e) {
+            e.printStackTrace();
         }
-
-        return data;
-
+        catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
-
-
-    @Override
-
-    public void start(Stage primaryStage) {
-
-        //initializing map
-
-        map = new HashMap<>();
-
-        //reading data from file. make sure you have the file in root directory
-
-        //of your project, if not detecting, please paste complete file path
-
-        loadData("weatherwarnings-2015.csv");
-
-        //creating a PieChart object using data from the map
-
-        PieChart chart = new PieChart(createChartData());
-
-        //aligning legend fields to left
-
-        chart.setLegendSide(Side.LEFT);
-
-        //creating a pane, adding chart and displaying it
-
-        Pane root = new Pane();
-
-        root.getChildren().add(chart);
-
-        Scene scene = new Scene(root);
-
-        primaryStage.setScene(scene);
-
-        primaryStage.setTitle("Lab 07");
-
-        primaryStage.show();
-
+    public static double createTotal(int a[]) {
+        int total=0;
+        for(int i=0;i<a.length;i++) {
+            total+=a[i];
+        }
+        return total;
     }
-
-
-
-    public static void main(String[] args) {
-
-        launch(args);
-
-    }
-
-
-
 }
